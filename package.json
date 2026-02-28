@@ -19,7 +19,9 @@
       "node18-linux"
     ],
     "outputPath": "dist/bin",
-    "assets": ["logo.txt"]
+    "assets": [
+      "logo.txt"
+    ]
   },
   "keywords": [],
   "author": "",
@@ -30,7 +32,8 @@
     "chalk": "^5.4.1",
     "commander": "^13.1.0",
     "conf": "^13.1.0",
-    "inquirer": "^9.3.7"
+    "inquirer": "^9.3.7",
+    "sql.js": "^1.14.0"
   },
   "devDependencies": {
     "@types/commander": "^2.12.2",

@@ -1,48 +1,10 @@
 #!/usr/bin/env node
 
-// Node 22: node:sqlite requires --experimental-sqlite; re-spawn if missing
-if (process.versions.node.startsWith('22.') && !process.execArgv.includes('--experimental-sqlite')) {
-  const { spawnSync } = require('child_process');
-  const result = spawnSync(process.execPath, ['--experimental-sqlite', ...process.argv.slice(1)], {
-    stdio: 'inherit',
-  });
-  process.exit(result.status ?? 0);
-}
-
 import { Command } from 'commander';
+import { setSqlJs } from './utils/cookie-extractor/sqlite';
 import { statusCommand } from './commands/status';
 import { configCommand } from './commands/config';
 import { providersCommand } from './commands/providers';
-
-// Node 22: patch node:sqlite so BigInt columns (e.g. expires_utc) don't throw
-async function applySqlitePatch(): Promise<void> {
-  if (!process.versions.node.startsWith('22.')){
-    console.log('Node 22 not detected, skipping sqlite patch');
-    return;
-  }
-  try {
-    const orig = process.emitWarning;
-    process.emitWarning = function (w: string | Error, options?: unknown) {
-      if (typeof w === 'string' && w.includes('SQLite is an experimental')) return;
-      if (w instanceof Error && w.message?.includes('SQLite is an experimental')) return;
-      return (orig as (w: string | Error, o?: unknown) => void).call(process, w, options);
-    };
-    const sqlite = await import('node:sqlite');
-    const proto = sqlite.DatabaseSync?.prototype;
-    if (proto && typeof proto.prepare === 'function') {
-      const prepare = proto.prepare;
-      proto.prepare = function (sql: string) {
-        const stmt = prepare.call(this, sql);
-        if (stmt && typeof (stmt as { setReadBigInts?: (v: boolean) => void }).setReadBigInts === 'function') {
-          (stmt as { setReadBigInts: (v: boolean) => void }).setReadBigInts(true);
-        }
-        return stmt;
-      };
-    }
-  } catch {
-    // ignore
-  }
-}
 
 const program = new Command();
 
@@ -56,7 +18,26 @@ program.addCommand(configCommand);
 program.addCommand(providersCommand);
 
 async function main(): Promise<void> {
-  await applySqlitePatch();
+  // Init pure-JS sql.js for cookie reading (Chromium/Firefox DBs).
+  // Prefer sql-asm.js (self-contained); fall back to sql-wasm.js (needs .wasm file).
+  let initSqlJs: (() => Promise<{ Database: new (data?: Uint8Array | number[]) => { exec: (sql: string) => Array<{ columns: string[]; values: unknown[][] }>; close: () => void } }>) | undefined;
+  try {
+    initSqlJs = require('sql.js/dist/sql-asm.js');
+  } catch {
+    try {
+      initSqlJs = require('sql.js');
+    } catch {
+      // not available
+    }
+  }
+  if (initSqlJs) {
+    try {
+      const SQL = await initSqlJs();
+      setSqlJs(SQL);
+    } catch {
+      // init failed
+    }
+  }
   program.parse(process.argv);
 }
 
