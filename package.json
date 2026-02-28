@@ -1,0 +1,43 @@
+{
+  "name": "tokenlens",
+  "version": "1.0.0",
+  "main": "dist/index.js",
+  "bin": {
+    "tlens": "./dist/index.js"
+  },
+  "scripts": {
+    "build": "esbuild src/index.ts --bundle --platform=node --target=node18 --format=cjs --outfile=dist/index.js",
+    "start": "node dist/index.js",
+    "dev": "ts-node src/index.ts",
+    "package": "npm run build && pkg .",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "pkg": {
+    "targets": [
+      "node18-macos-arm64",
+      "node18-macos-x64",
+      "node18-linux"
+    ],
+    "outputPath": "dist/bin"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "description": "",
+  "dependencies": {
+    "axios": "^1.7.9",
+    "chalk": "^5.4.1",
+    "commander": "^13.1.0",
+    "conf": "^13.1.0",
+    "inquirer": "^9.3.7"
+  },
+  "devDependencies": {
+    "@types/commander": "^2.12.2",
+    "@types/inquirer": "^9.0.7",
+    "@types/node": "^22.13.5",
+    "esbuild": "^0.25.0",
+    "pkg": "^5.8.1",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.7.3"
+  }
+}
