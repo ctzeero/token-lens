@@ -100,6 +100,10 @@ Note: You may be prompted to allow access to "Chrome Safe Storage" in your Keych
 ```bash
 tlens config setup
 ```
+Optional browser for Cursor (manual):
+```bash
+tlens config set browser chrome   # all | chrome | arc | edge | firefox | safari
+```
 Optional Copilot token (manual):
 ```bash
 tlens config set copilot YOUR-TOKEN
@@ -113,7 +117,7 @@ tlens providers list
 
 ## How it works
 
-- **Cursor**: TokenLens reads session cookies from your local browser (Chrome, Arc, Edge, Safari, Firefox) to authenticate requests. You must be logged in to the Cursor web dashboard. On macOS you may be prompted to allow Keychain access for Chrome Safe Storage (required to read encrypted cookies).
+- **Cursor**: TokenLens reads session cookies from your local browser (Chrome, Arc, Edge, Safari, Firefox) to authenticate requests. You must be logged in to the Cursor web dashboard. You can optionally choose which browser to check first via `tlens config set browser <name>` or during `tlens config setup`. On macOS you may be prompted to allow Keychain access for Chrome Safe Storage (required to read encrypted cookies).
 - **Codex**: Reads `~/.codex/auth.json` (or `$CODEX_HOME`); refreshes OAuth when needed; fetches usage from the wham/usage API. Log in first with the Codex CLI so the auth file exists.
 - **Gemini**: Uses CLI OAuth credentials and Code Assist APIs; token refresh is handled automatically. Run `gemini login` first to connect.
 - **Copilot** (config only): Optional token in `~/.config/tokenlens-nodejs/` for `tlens config set/remove copilot`.
