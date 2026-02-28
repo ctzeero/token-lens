@@ -1,6 +1,7 @@
 # TokenLens 🔍
 
 A CLI tool to check token usage for Cursor and other AI providers.
+<img width="732" height="305" alt="Screenshot 2026-02-28 at 4 11 03 PM" src="https://github.com/user-attachments/assets/b166254a-2ff3-49dd-879f-3505c7be48c8" />
 
 ## Features
 
