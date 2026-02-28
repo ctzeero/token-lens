@@ -18,7 +18,8 @@
       "node18-macos-x64",
       "node18-linux"
     ],
-    "outputPath": "dist/bin"
+    "outputPath": "dist/bin",
+    "assets": ["logo.txt"]
   },
   "keywords": [],
   "author": "",

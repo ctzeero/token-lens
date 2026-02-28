@@ -9,12 +9,19 @@ import { getGeminiUsage, GeminiUsage } from '../providers/gemini';
 const LOGO_PALETTE = ['#00E676', '#00BFA5', '#1E88E5'] as const;
 
 function loadLogo(): string | null {
-  try {
-    const p = path.join(__dirname, '..', 'logo.txt');
-    return fs.readFileSync(p, 'utf8').trimEnd();
-  } catch {
-    return null;
+  const candidates = [
+    path.join(__dirname, '..', 'logo.txt'),
+    path.join(path.dirname(process.execPath), 'logo.txt'),
+  ];
+  for (const p of candidates) {
+    try {
+      const raw = fs.readFileSync(p, 'utf8').trimEnd();
+      if (raw && raw.length > 0) return raw;
+    } catch {
+      /* try next */
+    }
   }
+  return null;
 }
 
 function renderLogo(): string {
